@@ -50,7 +50,6 @@ SqlQuery0 = """
 select sensor.serialNumber, sensor.sensorReadingTime, sensor.distanceFromObject from customer
 inner join sensor 
 on customer.serialNumber = sensor.serialNumber
-
 """
 SQLQuery_node1699381692390 = sparkSqlQuery(
     glueContext,
@@ -63,15 +62,17 @@ SQLQuery_node1699381692390 = sparkSqlQuery(
 )
 
 # Script generated for node Step Trainer Trusted
-StepTrainerTrusted_node1699339253797 = glueContext.write_dynamic_frame.from_options(
-    frame=SQLQuery_node1699381692390,
+StepTrainerTrusted_node1699339253797 = glueContext.getSink(
+    path="s3://dhht-lakehouse/ step_trainer/trusted/",
     connection_type="s3",
-    format="json",
-    connection_options={
-        "path": "s3://dhht-lakehouse/ step_trainer/trusted/",
-        "partitionKeys": [],
-    },
+    updateBehavior="UPDATE_IN_DATABASE",
+    partitionKeys=[],
+    enableUpdateCatalog=True,
     transformation_ctx="StepTrainerTrusted_node1699339253797",
 )
-
+StepTrainerTrusted_node1699339253797.setCatalogInfo(
+    catalogDatabase="dhht-lakehouse", catalogTableName="step_trainer_trusted"
+)
+StepTrainerTrusted_node1699339253797.setFormat("json")
+StepTrainerTrusted_node1699339253797.writeFrame(SQLQuery_node1699381692390)
 job.commit()

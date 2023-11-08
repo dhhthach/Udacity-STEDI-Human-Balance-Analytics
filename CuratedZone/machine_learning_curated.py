@@ -50,7 +50,6 @@ SqlQuery0 = """
 select sensor.serialNumber, sensor.sensorReadingTime, sensor.distanceFromObject from sensor
 inner join accelerometer 
 on sensor.sensorReadingTime = accelerometer.timeStamp
-
 """
 SQLQuery_node1699381692390 = sparkSqlQuery(
     glueContext,
@@ -63,15 +62,17 @@ SQLQuery_node1699381692390 = sparkSqlQuery(
 )
 
 # Script generated for node Machine Learning Curated
-MachineLearningCurated_node1699339253797 = glueContext.write_dynamic_frame.from_options(
-    frame=SQLQuery_node1699381692390,
+MachineLearningCurated_node1699339253797 = glueContext.getSink(
+    path="s3://dhht-lakehouse/machine_learning_curated/",
     connection_type="s3",
-    format="json",
-    connection_options={
-        "path": "s3://dhht-lakehouse/machine_learning_curated/",
-        "partitionKeys": [],
-    },
+    updateBehavior="UPDATE_IN_DATABASE",
+    partitionKeys=[],
+    enableUpdateCatalog=True,
     transformation_ctx="MachineLearningCurated_node1699339253797",
 )
-
+MachineLearningCurated_node1699339253797.setCatalogInfo(
+    catalogDatabase="dhht-lakehouse", catalogTableName="machine_learning_curated"
+)
+MachineLearningCurated_node1699339253797.setFormat("json")
+MachineLearningCurated_node1699339253797.writeFrame(SQLQuery_node1699381692390)
 job.commit()

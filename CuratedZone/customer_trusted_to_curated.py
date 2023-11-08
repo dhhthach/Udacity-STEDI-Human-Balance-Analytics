@@ -78,15 +78,17 @@ DropDuplicates_node1699378610176 = DynamicFrame.fromDF(
 )
 
 # Script generated for node Customer Curated
-CustomerCurated_node1699339253797 = glueContext.write_dynamic_frame.from_options(
-    frame=DropDuplicates_node1699378610176,
+CustomerCurated_node1699339253797 = glueContext.getSink(
+    path="s3://dhht-lakehouse/customer/curated/",
     connection_type="s3",
-    format="json",
-    connection_options={
-        "path": "s3://dhht-lakehouse/customer/curated/",
-        "partitionKeys": [],
-    },
+    updateBehavior="UPDATE_IN_DATABASE",
+    partitionKeys=[],
+    enableUpdateCatalog=True,
     transformation_ctx="CustomerCurated_node1699339253797",
 )
-
+CustomerCurated_node1699339253797.setCatalogInfo(
+    catalogDatabase="dhht-lakehouse", catalogTableName="customer_curated"
+)
+CustomerCurated_node1699339253797.setFormat("json")
+CustomerCurated_node1699339253797.writeFrame(DropDuplicates_node1699378610176)
 job.commit()

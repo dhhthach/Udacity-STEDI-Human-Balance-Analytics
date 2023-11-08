@@ -46,15 +46,17 @@ SQLQuery_node1699337425228 = sparkSqlQuery(
 )
 
 # Script generated for node Customer Trusted
-CustomerTrusted_node1699338174661 = glueContext.write_dynamic_frame.from_options(
-    frame=SQLQuery_node1699337425228,
+CustomerTrusted_node1699338174661 = glueContext.getSink(
+    path="s3://dhht-lakehouse/customer/trusted/",
     connection_type="s3",
-    format="json",
-    connection_options={
-        "path": "s3://dhht-lakehouse/customer/trusted/",
-        "partitionKeys": [],
-    },
+    updateBehavior="UPDATE_IN_DATABASE",
+    partitionKeys=[],
+    enableUpdateCatalog=True,
     transformation_ctx="CustomerTrusted_node1699338174661",
 )
-
+CustomerTrusted_node1699338174661.setCatalogInfo(
+    catalogDatabase="dhht-lakehouse", catalogTableName="customer_trusted"
+)
+CustomerTrusted_node1699338174661.setFormat("json")
+CustomerTrusted_node1699338174661.writeFrame(SQLQuery_node1699337425228)
 job.commit()
